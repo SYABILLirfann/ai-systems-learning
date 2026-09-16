@@ -26,3 +26,13 @@ for player in players:
         print("STAR PLAYER FOUND")
 
 print(f"there are {len(players)} players in the squad")
+
+
+
+def football_training():
+    print("Training started!")
+    print("Scanning...")
+    print("Passing...")
+    print("Training complete!")
+
+football_training()
