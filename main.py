@@ -1,38 +1,20 @@
-name = input("Whats is your name? ")
-print(f"welcome {name}!")
+squad = [
+    {"name": "Haaland", "goals": 8},
+    {"name": "Foden", "goals": 4},
+    {"name": "Doku", "goals": 2}
+]
 
-goals = int(input("How many goals have you scored? "))
+def squad_report(squad):
+    for player in squad:
+        print(f"{player['name']} has {player['goals']} goals.")
 
-assists = int(input("How many assists have you made? "))
+        if player["goals"] >= 5:
+            print("Elite Goal Scorer!") 
+        
+        else:
+             print("Keep improving.")
 
-if goals >= 2 and assists >= 1:
-
-    print("Elite Performance")
-
-else:
-
-    print("Keep Improving")
-
-
-players = ["Haaland", "Foden", "Doku", "Rodri"]
-
-
-for player in players: 
-
-    print(f" Checking {player}!") 
-
-    if player is "Haaland":
-
-        print("STAR PLAYER FOUND")
-
-print(f"there are {len(players)} players in the squad")
+squad[0]["goals"] = squad[0]["goals"] + 2
 
 
-
-def football_training():
-    print("Training started!")
-    print("Scanning...")
-    print("Passing...")
-    print("Training complete!")
-
-football_training()
+squad_report(squad)
