@@ -1,20 +1,43 @@
-squad = [
-    {"name": "Haaland", "goals": 8},
-    {"name": "Foden", "goals": 4},
-    {"name": "Doku", "goals": 2}
-]
+name = input("Player Name: ")
 
-def squad_report(squad):
-    for player in squad:
-        print(f"{player['name']} has {player['goals']} goals.")
+try:
+    goals = int(input("Goals: "))
 
-        if player["goals"] >= 5:
-            print("Elite Goal Scorer!") 
-        
-        else:
-             print("Keep improving.")
-
-squad[0]["goals"] = squad[0]["goals"] + 2
+except ValueError:
+    print("Please enter a valid number.")
+    exit()
 
 
-squad_report(squad)
+player = {
+    "name": name,
+    "goals": goals
+}
+
+
+import json
+
+file = open("player.json", "w")
+
+json.dump(player, file)
+
+file.close()
+
+opened_file = open("player.json", "r")
+
+saved_player = json.load(opened_file)
+
+opened_file.close()
+
+print(saved_player)
+
+def check_player(player):
+
+
+    if player["goals"] >= 5:
+     return"Elite GoalScorer!"
+
+    else:
+     return"Keep improving."
+
+print(check_player(saved_player))
+
