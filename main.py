@@ -1,26 +1,45 @@
 import requests
 
 
-try:
+def search_city(city):
 
-    response = requests.get("https://api.github.com")
+    search_parameters = {
+    "name": city
+     }
 
 
-    print(response.status_code)
-
-    if response.status_code == 200:
-       print("API connected!")    
+    try:
     
-       data = response.json()
-       print(f"Repository API : {data['repository_url']}")
+         response = requests.get(
+        "https://geocoding-api.open-meteo.com/v1/search",
+         params=search_parameters
+         )
 
-    else:
-        print("API error!")
-
+         if response.status_code == 200:
     
-except requests.RequestException:
+            whole_data = response.json()
 
-    print("An error occurred:")
+            if"results" in whole_data:
 
 
+             print (f"City:{whole_data['results'][0]['name']}")
+             print (f"Country:{whole_data['results'][0]['country']}")
+             print (f"Latitude:{whole_data['results'][0]['latitude']}")
+             print (f"Longitude:{whole_data['results'][0]['longitude']}")
 
+
+            else:
+             print ("Location not found.")
+ 
+
+
+         else:
+            print(f"API error:{response.status_code}")
+
+
+    except requests.RequestException:
+          print("Could not connect to the API.")
+
+city = input("Enter a city: ")
+
+search_city(city)
