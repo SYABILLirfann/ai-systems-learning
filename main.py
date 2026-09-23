@@ -1,61 +1,67 @@
 import requests
 
 def search_location(location):
-    search_parameters ={
-        "name": location
-    }
+    search_parameters = {"name": location}
+
     try:
-       response = requests.get(
-       "https://geocoding-api.open-meteo.com/v1/search",
-       params=search_parameters
-       )
-       if response.status_code == 200:
-           whole_data = response.json()
+        response = requests.get(
+        "https://geocoding-api.open-meteo.com/v1/search",
+        params=search_parameters
+    )
 
-           if "results" in whole_data:
+        if response.status_code == 200:
+            whole_data = response.json()
 
-               location_data = {
-                   "name": whole_data["results"][0]["name"],
-                   "country": whole_data["results"][0]["country"],
-                   "latitude": whole_data["results"][0]["latitude"],
-                   "longitude": whole_data["results"][0]["longitude"]
-                    }
+            if "results" in whole_data:
 
-
-               return location_data
-           else:
-               return None
-
-       else:
-
-        return None
-
+                location_data = {
+                                 "name": whole_data["results"][0]["name"],
+                                 "country": whole_data["results"][0]["country"],
+                                 "latitude": whole_data["results"][0]["latitude"],
+                                 "longitude": whole_data["results"][0]["longitude"],
+                                }
+                return location_data
+            
+            else:
+                return None
+        else:
+            return None
     except requests.RequestException:
         return None
 
-def build_travel_report(location_data):
-    travel_report = {
-        "destination": location_data["name"],
-        "country": location_data["country"],
-        "latitude": location_data["latitude"],
-        "longitude": location_data["longitude"]
-    }
 
-    return travel_report
 
-def send_report(travel_report):
+def get_weather(location_data):
+    latitude = location_data["latitude"]
+    longitude = location_data["longitude"]
+
+    weather_parameters = {
+    "latitude": latitude,
+    "longitude": longitude,
+    "current": "temperature_2m,wind_speed_10m,weather_code"
+     } 
+
 
     try:
+        weather_response = requests.get(
+        "https://api.open-meteo.com/v1/forecast",
+        params=weather_parameters
+    )
+        if weather_response.status_code == 200:
+            weather_data = weather_response.json()
 
-        response = requests.post(
-            "https://jsonplaceholder.typicode.com/posts",
-            json = travel_report
-        )
+            temperature = weather_data["current"]["temperature_2m"]
+            wind_speed = weather_data["current"]["wind_speed_10m"]
+            weather_code = weather_data["current"]["weather_code"]
 
-        if response.status_code == 201:
 
-            returned_data = response.json()
-            return returned_data
+            weather_info = {
+                            "temperature": temperature,
+                            "wind_speed": wind_speed,
+                            "weather_code": weather_code
+                            }
+
+            return weather_info
 
         else:
             return None
@@ -63,18 +69,38 @@ def send_report(travel_report):
     except requests.RequestException:
         return None
 
+
+def build_weather_report(location_data, weather_info):
+    report = {
+    "destination": location_data["name"],
+    "country": location_data["country"],
+    "temperature": weather_info["temperature"],
+    "wind_speed": weather_info["wind_speed"],
+    "weather_code": weather_info["weather_code"],
+}
+
+    return report
+
+
+
 location = input("Enter a destination: ")
 
 location_data = search_location(location)
 
 if location_data:
-    travel_report = build_travel_report(location_data)
-    report_result = send_report(travel_report)
+    weather_info = get_weather(location_data)
 
-    if report_result:
-        print("Travel report sent successfully!")
+    if weather_info:
+        report = build_weather_report(location_data, weather_info)
+
+        print(f"Destination: {report['destination']}")
+        print(f"Country: {report['country']}")
+        print(f"Temperature: {report['temperature']}")
+        print(f"Wind Speed: {report['wind_speed']}")
+        print(f"Weather Code: {report['weather_code']}")
+
     else:
-        print("Travel report failed.")
+        print("Weather could not be found")
 
 else:
-    print("Location not found")
+    print("Location could not be found")
