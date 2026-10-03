@@ -47,14 +47,14 @@ def find_player(db_worker, player_name):
 
 def get_top_scorers(db_worker):
     db_worker.execute(
-        "SELECT * FROM players ORDER BY goals DESC LIMIT 5"
+        "SELECT name, goals FROM players ORDER BY goals DESC LIMIT 5"
     )
 
     return db_worker.fetchall()
 
 def get_high_performers(db_worker, minimum_goals, minimum_assists):
     db_worker.execute(
-        "SELECT * FROM players WHERE goals >= ? AND assists >= ? ORDER BY goals DESC, assists DESC",
+        "SELECT name, goals, assists FROM players WHERE goals >= ? AND assists >= ? ORDER BY goals DESC, assists DESC",
         (minimum_goals, minimum_assists)
     )
 
@@ -92,7 +92,7 @@ def show_high_performers(db_worker):
         return
 
     for player in high_performers:
-        print(f"{player[0]} — {player[3]} goals, {player[4]} assists")
+        print(f"{player[0]} — {player[1]} goals, {player[2]} assists")
 
 
     
@@ -177,7 +177,7 @@ while True:
          number = 1
 
          for player in top_scorers:
-             print(f"{number}. {player[0]} — {player[3]} goals")
+             print(f"{number}. {player[0]} — {player[1]} goals")
              number += 1
 
     elif choice == "3":
