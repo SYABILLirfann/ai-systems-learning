@@ -77,6 +77,23 @@ def show_high_performers(db_worker):
         print("Please enter numbers only.")
         return
 
+    if minimum_goals < 0 or minimum_assists < 0:
+        print("Goals and assists cannot be negative.")
+        return
+
+    high_performers = get_high_performers(
+        db_worker,
+        minimum_goals,
+        minimum_assists
+    )
+
+    if not high_performers:
+        print("No players found matching those requirements.")
+        return
+
+    for player in high_performers:
+        print(f"{player[0]} — {player[3]} goals, {player[4]} assists")
+
 
     
 client = OpenAI()
@@ -164,30 +181,7 @@ while True:
              number += 1
 
     elif choice == "3":
-
-        try:
-              minimum_goals = int(input("Minimum goals: "))
-              minimum_assists = int(input("Minimum assists: "))
-        except ValueError:
-                  print("Please enter numbers only.")
-                  continue
-
-        if minimum_goals < 0 or minimum_assists < 0:
-           print("Goals and assists cannot be negative.")
-           continue
-
-        high_performers = get_high_performers(
-            db_worker,
-            minimum_goals,
-            minimum_assists
-        )
-
-        if not high_performers:
-           print("No players found matching those requirements.")
-           continue
-
-        for player in high_performers:
-            print(f"{player[0]} — {player[3]} goals, {player[4]} assists")
+        show_high_performers(db_worker)
 
     else:
         print("Invalid option. Please choose 1, 2, or 3.")
