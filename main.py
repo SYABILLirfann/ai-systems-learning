@@ -65,7 +65,8 @@ def show_menu():
     print("1. Scout a player")
     print("2. Show top scorers")
     print("3. Find high performers")
-    print("4. Exit")
+    print("4. Show attacking threats")
+    print("5. Exit")
 
     return input("Choose an option: ").strip()
 
@@ -94,6 +95,40 @@ def show_high_performers(db_worker):
     for player in high_performers:
         print(f"{player['name']} — {player['goals']} goals, {player['assists']} assists")
 
+def get_attacking_threats(db_worker, minimum_goals, minimum_assists):
+    db_worker.execute(
+        """
+        SELECT name, goals, assists
+        FROM players
+        WHERE goals >= 15 OR assists >= 15
+        ORDER BY goals DESC, assists DESC
+        """,
+        (minimum_goals, minimum_assists)
+    )
+
+    return db_worker.fetchall()
+
+def show_attacking_threats(db_worker):
+    minimum_goals = int(input("Minimum goals: "))
+    minimum_assists = int(input("Minimum assists: "))
+
+    threats = get_attacking_threats(
+        db_worker,
+        minimum_goals,
+        minimum_assists
+    )
+
+    if not threats:
+        print("No attacking threats found.")
+        return
+
+    for player in threats:
+        print(
+            f"{player['name']} — "
+            f"{player['goals']} goals, "
+            f"{player['assists']} assists"
+        )
+
 
     
 client = OpenAI()
@@ -116,7 +151,7 @@ if "ai_rating_reason" not in [column[1] for column in columns]:
 while True:
     choice = show_menu()
 
-    if choice == "4":
+    if choice == "5":
         break
 
     elif choice == "1":
@@ -187,8 +222,12 @@ while True:
     elif choice == "3":
         show_high_performers(db_worker)
 
+    elif choice == "4":
+        show_attacking_threats(db_worker)
+
     else:
         print("Invalid option. Please choose 1, 2, or 3.")
+
 
 
 
