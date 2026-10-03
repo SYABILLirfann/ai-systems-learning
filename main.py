@@ -92,7 +92,7 @@ def show_high_performers(db_worker):
         return
 
     for player in high_performers:
-        print(f"{player[0]} — {player[1]} goals, {player[2]} assists")
+        print(f"{player['name']} — {player['goals']} goals, {player['assists']} assists")
 
 
     
@@ -101,6 +101,7 @@ client = OpenAI()
 
 
 db = sqlite3.connect("player_database.db")
+db.row_factory = sqlite3.Row
 db_worker = db.cursor()
 
 db_worker.execute("PRAGMA table_info(players)")
@@ -128,11 +129,11 @@ while True:
              continue
 
 
-        name = player_data[0]
-        position = player_data[1]
-        club = player_data[2]
-        goals = player_data[3]
-        assists = player_data[4]
+        name = player_data["name"]
+        position = player_data["position"]
+        club = player_data["club"]
+        goals = player_data["goals"]
+        assists = player_data["assists"]
 
 
         try:
@@ -167,9 +168,12 @@ while True:
             (name,)
             )
 
-        saved_player = db_worker.fetchone()
-        print(f"Saved to database: {saved_player}")
+    
 
+        saved_player = db_worker.fetchone()
+
+        print(f"Saved to database: {saved_player['name']}")
+        print(f"AI rating saved: {saved_player['ai_rating']}/10")
 
     elif choice == "2":
          top_scorers = get_top_scorers(db_worker)
@@ -177,7 +181,7 @@ while True:
          number = 1
 
          for player in top_scorers:
-             print(f"{number}. {player[0]} — {player[1]} goals")
+             print(f"{number}. {player['name']} — {player['goals']} goals")
              number += 1
 
     elif choice == "3":
